@@ -14,7 +14,7 @@ commandFiles.forEach((file) => {
   client.commands.set(command.name, command);
 });
 
-client.login('process.env.BOT_TOKEN');
+client.login(process.env.BOT_TOKEN);
 
 client.once('ready', () => {
   console.log('Ready!');
