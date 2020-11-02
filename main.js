@@ -21,7 +21,16 @@ client.once('ready', () => {
 });
 
 client.on('message', (message) => {
+  if (!message.content.startsWith(prefix) || message.author.bot) return;
+
+  const args = message.content.slice(prefix.length).trim().split(' ');
+  const command = args[0].toLowerCase();
+  console.log(args);
+
   if (!client.commands.has(command)) {
+    message.channel.send(
+      "Having trouble? Try '-help' for more information on possible commands."
+    );
     return;
   }
 
