@@ -9,7 +9,7 @@ module.exports = {
       const page = await browser.newPage();
       await page.goto('https://maplesaga.com/');
       const playerCount = await page.evaluate(() => {
-        return document.querySelector('.label');
+        return document.querySelector('.label').innerText;
       });
 
       message.channel.send(`There are currently ${playerCount} players online`);
@@ -18,5 +18,3 @@ module.exports = {
     })();
   },
 };
-
-<span class="label">217 players online</span>;
