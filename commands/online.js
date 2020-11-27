@@ -1,20 +1,21 @@
-const puppeteer = require('puppeteer');
+const axios = require('axios');
 
 module.exports = {
   name: 'online',
   description: 'View how many players are currently playing MapleSaga',
   execute(message, args) {
-    (async () => {
-      const browser = await puppeteer.launch();
-      const page = await browser.newPage();
-      await page.goto('https://maplesaga.com/');
-      const playerCount = await page.evaluate(() => {
-        return document.querySelector('.label').innerText;
+    axios
+      .get('https://maplesaga.com/')
+      .then((response) => {
+        const playerCount = response.data.match(
+          /<span class="label">(.+) players online<\/span>/
+        );
+        message.channel.send(
+          `There are currently ${playerCount[1]} players online.`
+        );
+      })
+      .catch((error) => {
+        console.log(error);
       });
-
-      message.channel.send(`There are currently ${playerCount} players online`);
-
-      await browser.close();
-    })();
   },
 };
