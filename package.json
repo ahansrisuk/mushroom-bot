@@ -8,6 +8,9 @@
     "start": "node main.js"
   },
   "author": "Allen Hansrisuk",
+  "contributors": [{
+    "name": "James Jung"
+  }],
   "license": "ISC",
   "dependencies": {
     "axios": "^0.21.0",
