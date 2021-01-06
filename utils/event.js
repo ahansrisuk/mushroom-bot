@@ -3,12 +3,25 @@ const originDate = new Date('January 4, 2021 00:00:00 GMT-5:00');
 
 const eventNames = ["Piggy Piggy", "JQR", "Money Money", "Bingo", "Ola Ola"];
 
-const eventHourMarks = {'est': [2, 6, 10, 14, 18, 22], 'pst' : [3, 7, 11, 15, 19, 23]};
+const eventHourMarks = {'cst': [1, 5, 9, 13, 17, 21], 'est': [2, 6, 10, 14, 18, 22], 'pst' : [3, 7, 11, 15, 19, 23]};
 
-const eventHourMarksStrings = { 'est': ['2 am', '6 am', '10 am', '2 pm', '6 pm', '10 pm'], 'pst' : ['3 am', '7 am', '11:00 am', '3:00 pm', '7:00 pm', "11:00 pm"]};
+const eventHourMarksStrings = {
+   'cst' : ['1:00 am', '5:00 am', '9:00 am', '1:00 pm', '5:00 pm', '9:00 pm'],
+   'est': ['2:00 am', '6:00 am', '10:00 am', '2:00 pm', '6:00 pm', '10:00 pm'],
+   'pst' : ['3:00 am', '7:00 am', '11:00 am', '3:00 pm', '7:00 pm', "11:00 pm"],
+};
 
 const eventCycles = 
    {
+      'cst' : [[4,0,1,2,3,4],
+      [1,1,2,3,4,1],
+      [2,2,3,4,1,2],
+      [3,3,4,1,2,3],
+      [0,4,1,2,3,0],
+      [1,1,2,3,0,1],
+      [2,2,3,0,1,2],
+      [3,3,0,1,2,3]]
+   ,
       'est' : [[4,0,1,2,3,4],
          [1,1,2,3,4,1],
          [2,2,3,4,1,2],
@@ -27,6 +40,8 @@ const eventCycles =
          [2,3,0,1,2,3],
          [3,0,1,2,3,4]]
 };
+
+const timezoneOffsets = { 'cst': -360, 'est' : -300, 'pst' : -480};
 
 /**
  * Calculates number of days between two Date objects
@@ -89,7 +104,7 @@ function getEvent(){
 function getEventSchedule(timezone) {
    let currentUTCDate = new Date();
    currentUTCDate.setTime(currentUTCDate.getTime()+currentUTCDate.getTimezoneOffset()*60*1000);
-   const offset = (timezone == 'est') ? -300 : -480;
+   const offset = timezoneOffsets[timezone];
    const currentDate = new Date(currentUTCDate.getTime() + offset*60*1000);
 
    const eventCycleIndex = daysBetween(originDate, currentDate) % 8;
