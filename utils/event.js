@@ -79,7 +79,7 @@ function getEvent(){
       }
    }
    if (timezone == '') {
-      return('uh oh, seems like this bot is being hosted in an unsupported timezone', timezoneOffset);
+      return('uh oh, seems like this bot is being hosted in an unsupported timezone' + timezoneOffset +" "+ currentHour + " " + currentMinute);
    }
    const eventCycle = (eventCycles[timezone])[eventCycleIndex];
    const nextEvent = eventNames[eventCycle[eventHourIndex]];
