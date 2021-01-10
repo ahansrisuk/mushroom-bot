@@ -62,14 +62,7 @@ function getEvent(){
    const currentHour = currentUTCDate.getHours();
    const currentMinute = currentUTCDate.getMinutes();
 
-   /* 
-   *  Get indices for current event
-   *  events happen on 3, 7, 11, 15, 19, 23 hour marks
-   *  event cycles repeat every 8 weekdays 
-   */
-   const eventCycleIndex = daysBetween(originDate, currentUTCDate) % 8;
-
-   const eventHourIndex = Math.floor(currentHour / 4); 
+   
    let timezoneOffset = currentUTCDate.getTimezoneOffset();
    let timezone = '';
    for (const [key, value] of Object.entries(timezoneOffsets)) {
@@ -79,8 +72,19 @@ function getEvent(){
       }
    }
    if (timezone == '') {
-      return('uh oh, seems like this bot is being hosted in an unsupported timezone' + timezoneOffset +" "+ currentHour + " " + currentMinute);
+     currentHour = (currentHour + 19 )% 24
+     timezone = 'est';
    }
+
+   /* 
+   *  Get indices for current event
+   *  events happen on 3, 7, 11, 15, 19, 23 hour marks
+   *  event cycles repeat every 8 weekdays 
+   */
+   const eventCycleIndex = daysBetween(originDate, currentUTCDate) % 8;
+
+   const eventHourIndex = Math.floor(currentHour / 4); 
+
    const eventCycle = (eventCycles[timezone])[eventCycleIndex];
    const nextEvent = eventNames[eventCycle[eventHourIndex]];
 
