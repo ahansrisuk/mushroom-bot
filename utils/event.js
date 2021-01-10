@@ -58,52 +58,58 @@ function daysBetween(startDate, endDate) {
  * returns next upcoming event 
  */
 function getEvent(){
-  let currentUTCDate = new Date();
-  currentUTCDate.setTime(currentUTCDate.getTime()+currentUTCDate.getTimezoneOffset()*60*1000);
+   let currentUTCDate = new Date();
+   const currentHour = currentUTCDate.getHours();
+   const currentMinute = currentUTCDate.getMinutes();
 
-  let estOffset = -300;
-  const estDate = new Date(currentUTCDate.getTime() + estOffset*60*1000);
+   /* 
+   *  Get indices for current event
+   *  events happen on 3, 7, 11, 15, 19, 23 hour marks
+   *  event cycles repeat every 8 weekdays 
+   */
+   const eventCycleIndex = daysBetween(originDate, currentUTCDate) % 8;
 
-  const currentHour = estDate.getHours();
-  const currentMinute = estDate.getMinutes();
+   const eventHourIndex = Math.floor(currentHour / 4); 
+   let timezoneOffset = currentUTCDate.getTimezoneOffset();
+   let timezone = '';
+   for (const [key, value] of Object.entries(timezoneOffsets)) {
+      if ((-1 * value) === timezoneOffset) {
+         timezone = key;
+         break;
+      }
+   }
+   if (timezone == '') {
+      return('uh oh, seems like this bot is being hosted in an unsupported timezone');
+   }
+   const eventCycle = (eventCycles[timezone])[eventCycleIndex];
+   const nextEvent = eventNames[eventCycle[eventHourIndex]];
 
-  /* 
-  *  Get indices for current event
-  *  events happen on 3, 7, 11, 15, 19, 23 hour marks
-  *  event cycles repeat every 8 weekdays 
-  */
-  const eventCycleIndex = daysBetween(originDate, estDate) % 8;
-  const eventHourIndex = Math.floor(currentHour / 4); 
-  const eventCycle = (eventCycles['est'])[eventCycleIndex];
-  const nextEvent = eventNames[eventCycle[eventHourIndex]];
 
+   let hourETA = 0;
 
-  let hourETA = 0;
+   for (hourMark of eventHourMarks.est) {
+      if (hourMark - currentHour >= 0) {
+         hourETA = (hourMark - currentHour);
+         break;
+      }
+   }
 
-  for (hourMark of eventHourMarks.est) {
-    if (hourMark - currentHour >= 0) {
-        hourETA = (hourMark - currentHour);
-        break;
-    }
-  }
+   const minuteETA = 60 - currentMinute; 
+   const hourConditional = (hourETA - 1 + (minuteETA == 60));
+   let notification = "";
 
-  const minuteETA = 60 - currentMinute; 
-  const hourConditional = (hourETA - 1 + (minuteETA == 60));
-  let notification = "";
+   if (hourETA == 0) {
+      notification += `${nextEvent} is happening right now!\n\nIt's been ${currentMinute} minutes since it started!`;
+   } else {
+      notification += "\nThere doesn't seem to be an event going on right now.\n\n";
+      notification += `${nextEvent} is happening in ${hourConditional ? `${hourConditional} hour(s) and ` : ``}${minuteETA % 60} minutes`;
+   }
 
-  if (hourETA == 0) {
-    notification += `${nextEvent} is happening right now!\n\nIt's been ${currentMinute} minutes since it started!`;
-  } else {
-    notification += "\nThere doesn't seem to be an event going on right now.\n\n";
-    notification += `${nextEvent} is happening in ${hourConditional ? `${hourConditional} hour(s) and ` : ``}${minuteETA % 60} minutes`;
-  }
-  
-  return notification;
+   return notification;
 }
 
 function getEventSchedule(timezone) {
    let currentUTCDate = new Date();
-   currentUTCDate.setTime(currentUTCDate.getTime()+currentUTCDate.getTimezoneOffset()*60*1000);
    const offset = timezoneOffsets[timezone];
    const currentDate = new Date(currentUTCDate.getTime() + offset*60*1000);
    const eventCycleIndex = daysBetween(originDate, currentDate) % 8;
