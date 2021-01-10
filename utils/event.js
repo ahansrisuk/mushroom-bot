@@ -1,5 +1,4 @@
-//TODO, make origin date accurate no matter what timezone it is being hosted on
-const originDate = new Date('January 4, 2021 00:00:00 GMT-5:00');
+const originDate = new Date(1609718400000);
 
 const eventNames = ["Piggy Piggy", "JQR", "Money Money", "Bingo", "Ola Ola"];
 
@@ -50,6 +49,7 @@ const timezoneOffsets = { 'cst': -360, 'est' : -300, 'pst' : -480};
  */
 function daysBetween(startDate, endDate) {
    var timeDiff = endDate.getTime() - startDate.getTime(); 
+   console.log(timeDiff/(1000*3600*24));
    var dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24)); 
    return dayDiff;
 }
@@ -106,7 +106,6 @@ function getEventSchedule(timezone) {
    currentUTCDate.setTime(currentUTCDate.getTime()+currentUTCDate.getTimezoneOffset()*60*1000);
    const offset = timezoneOffsets[timezone];
    const currentDate = new Date(currentUTCDate.getTime() + offset*60*1000);
-
    const eventCycleIndex = daysBetween(originDate, currentDate) % 8;
    const eventCycle = (eventCycles[timezone])[eventCycleIndex];
    const eventCycleNames = eventCycle.map(eventIndex => eventNames[eventIndex]);
