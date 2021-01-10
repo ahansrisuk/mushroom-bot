@@ -59,8 +59,8 @@ function daysBetween(startDate, endDate) {
  */
 function getEvent(){
    let currentUTCDate = new Date();
-   const currentHour = currentUTCDate.getHours();
-   const currentMinute = currentUTCDate.getMinutes();
+   let currentHour = currentUTCDate.getHours();
+   let currentMinute = currentUTCDate.getMinutes();
 
 
    let timezoneOffset = currentUTCDate.getTimezoneOffset();
