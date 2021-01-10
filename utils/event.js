@@ -62,7 +62,7 @@ function getEvent(){
    const currentHour = currentUTCDate.getHours();
    const currentMinute = currentUTCDate.getMinutes();
 
-   
+
    let timezoneOffset = currentUTCDate.getTimezoneOffset();
    let timezone = '';
    for (const [key, value] of Object.entries(timezoneOffsets)) {
@@ -72,7 +72,7 @@ function getEvent(){
       }
    }
    if (timezone == '') {
-     currentHour = (currentHour + 19 )% 24
+     currentHour = (currentHour + 19) % 24;
      timezone = 'est';
    }
 
