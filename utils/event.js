@@ -58,7 +58,6 @@ function daysBetween(startDate, endDate) {
  * returns next upcoming event 
  */
 function getEvent(){
-   let debug = true;
    let currentUTCDate = new Date();
    let currentHour = currentUTCDate.getHours();
    let currentMinute = currentUTCDate.getMinutes();
@@ -71,12 +70,10 @@ function getEvent(){
       }
    }
    if (timezone == '') {
-      currentHour = currentHour + 19 % 24;
+      currentHour = (currentHour + 19) % 24;
       timezone = 'est';
    }
-   if(debug) {
-      return `\nDEBUGMODE: \ncurrentHour: ${currentHour}\ntimezone: ${timezone}\n`;
-   }
+
    const offset = timezoneOffsets[timezone];
    const currentDate = new Date(currentUTCDate.getTime() + offset*60*1000);
 
@@ -85,7 +82,6 @@ function getEvent(){
    *  events happen on 3, 7, 11, 15, 19, 23 hour marks
    *  event cycles repeat every 8 weekdays 
    */
-   const eventCycleIndex = daysBetween(originDate, currentDate) % 8;
 
    const eventHourIndex = Math.floor(currentHour / 4); 
 
@@ -106,7 +102,9 @@ function getEvent(){
       wrapNextDay = true;
    }
 
-   const eventCycle = (eventCycles[timezone])[eventCycleIndex + (wrapNextDay ? 1 : 0)];
+   let eventCycleIndex = ((daysBetween(originDate, currentDate) + (wrapNextDay ? 1 : 0)) % 8);
+
+   const eventCycle = (eventCycles[timezone])[eventCycleIndex];
    const nextEvent = eventNames[eventCycle[wrapNextDay ? 0 : eventHourIndex]];
 
 
