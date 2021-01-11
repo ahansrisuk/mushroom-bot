@@ -59,7 +59,8 @@ function daysBetween(startDate, endDate) {
  */
 function getEvent(){
    let currentUTCDate = new Date();
-
+   let currentHour = currentUTCDate.getHours();
+   let currentMinute = currentUTCDate.getMinutes();
    let timezoneOffset = currentUTCDate.getTimezoneOffset();
    let timezone = '';
    for (const [key, value] of Object.entries(timezoneOffsets)) {
@@ -69,13 +70,13 @@ function getEvent(){
       }
    }
    if (timezone == '') {
-     timezone = 'est';
+      currentHour = currentHour + 19 % 24;
+      timezone = 'est';
    }
 
    const offset = timezoneOffsets[timezone];
    const currentDate = new Date(currentUTCDate.getTime() + offset*60*1000);
-   const currentHour = currentUTCDate.getHours();
-   const currentMinute = currentUTCDate.getMinutes();
+
    /* 
    *  Get indices for current event
    *  events happen on 3, 7, 11, 15, 19, 23 hour marks
