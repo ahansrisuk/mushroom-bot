@@ -50,7 +50,7 @@ const timezoneOffsets = { 'cst': -360, 'est' : -300, 'pst' : -480};
 function daysBetween(startDate, endDate) {
    var timeDiff = endDate.getTime() - startDate.getTime(); 
    var dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24)); 
-   console.log(dayDiff);
+   console.log(timeDiff/(1000*3600*24));
    return dayDiff;
 }
 
@@ -120,7 +120,7 @@ function getEvent(){
 }
 
 function getEventSchedule(timezone) {
-
+   let debug = true;
    let currentUTCDate = new Date();
 
    let currentHour = currentUTCDate.getHours();
@@ -164,6 +164,10 @@ function getEventSchedule(timezone) {
    let schedule = wrapNextDay ? `Looks like all of the events have ended for today (${timezone}).  Here is tomorrows schedule:\n\n` : `Here is the event schedule for today(${timezone}):\n\n`;
    for (let i = 0; i < 6; i ++){
       schedule += `${(eventHourMarksStrings[timezone])[i]} : ${eventCycleNames[i]}\n`;
+   }
+
+   if (debug) {
+      schedule += `\n currentHour: ${currentHour}`;
    }
    return schedule;
 }
