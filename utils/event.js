@@ -167,7 +167,7 @@ function getEventSchedule(timezone) {
    }
 
    if (debug) {
-      schedule += `\n currentHour: ${currentHour}`;
+      schedule += `\nDEBUGMODE: \ncurrentHour: ${currentHour}\neventCycleIndex: ${eventCycleIndex}\n`;
    }
    return schedule;
 }
