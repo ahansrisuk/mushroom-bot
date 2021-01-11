@@ -58,6 +58,7 @@ function daysBetween(startDate, endDate) {
  * returns next upcoming event 
  */
 function getEvent(){
+   let debug = true;
    let currentUTCDate = new Date();
    let currentHour = currentUTCDate.getHours();
    let currentMinute = currentUTCDate.getMinutes();
@@ -73,7 +74,9 @@ function getEvent(){
       currentHour = currentHour + 19 % 24;
       timezone = 'est';
    }
-
+   if(debug) {
+      return `\nDEBUGMODE: \ncurrentHour: ${currentHour}\ntimezone: ${timezone}\n`;
+   }
    const offset = timezoneOffsets[timezone];
    const currentDate = new Date(currentUTCDate.getTime() + offset*60*1000);
 
@@ -124,7 +127,7 @@ function getEvent(){
 
 function getEventSchedule(timezone) {
    try{
-      let debug = true;
+      let debug = false;
       let currentUTCDate = new Date();
    
       let currentHour = currentUTCDate.getHours();
