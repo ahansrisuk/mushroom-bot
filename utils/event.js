@@ -59,9 +59,6 @@ function daysBetween(startDate, endDate) {
  */
 function getEvent(){
    let currentUTCDate = new Date();
-   let currentHour = currentUTCDate.getHours();
-   let currentMinute = currentUTCDate.getMinutes();
-
 
    let timezoneOffset = currentUTCDate.getTimezoneOffset();
    let timezone = '';
@@ -72,31 +69,42 @@ function getEvent(){
       }
    }
    if (timezone == '') {
-     currentHour = (currentHour + 19) % 24;
      timezone = 'est';
    }
 
+   const offset = timezoneOffsets[timezone];
+   const currentDate = new Date(currentUTCDate.getTime() + offset*60*1000);
+   const currentHour = currentUTCDate.getHours();
+   const currentMinute = currentUTCDate.getMinutes();
    /* 
    *  Get indices for current event
    *  events happen on 3, 7, 11, 15, 19, 23 hour marks
    *  event cycles repeat every 8 weekdays 
    */
-   const eventCycleIndex = daysBetween(originDate, currentUTCDate) % 8;
+   const eventCycleIndex = daysBetween(originDate, currentDate) % 8;
 
    const eventHourIndex = Math.floor(currentHour / 4); 
 
-   const eventCycle = (eventCycles[timezone])[eventCycleIndex];
-   const nextEvent = eventNames[eventCycle[eventHourIndex]];
+   let hourETA = -1;
+   let wrapNextDay = false;
 
-
-   let hourETA = 0;
-
-   for (hourMark of eventHourMarks.est) {
+   for (hourMark of eventHourMarks[timezone]) {
       if (hourMark - currentHour >= 0) {
          hourETA = (hourMark - currentHour);
          break;
       }
    }
+
+
+   //Wrap to next day
+   if(hourETA < 0) {
+      hourETA = ((eventHourMarks[timezone][0] + 24) - currentHour);
+      wrapNextDay = true;
+   }
+
+   const eventCycle = (eventCycles[timezone])[eventCycleIndex + (wrapNextDay ? 1 : 0)];
+   const nextEvent = eventNames[eventCycle[wrapNextDay ? 0 : eventHourIndex]];
+
 
    const minuteETA = 60 - currentMinute; 
    const hourConditional = (hourETA - 1 + (minuteETA == 60));
