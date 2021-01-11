@@ -58,70 +58,69 @@ function daysBetween(startDate, endDate) {
  * returns next upcoming event 
  */
 function getEvent(){
-   try{
-      let currentUTCDate = new Date();
-      let currentHour = currentUTCDate.getHours();
-      let currentMinute = currentUTCDate.getMinutes();
-      let timezoneOffset = currentUTCDate.getTimezoneOffset();
-      let timezone = '';
-      for (const [key, value] of Object.entries(timezoneOffsets)) {
-         if ((-1 * value) === timezoneOffset) {
-            timezone = key;
-            break;
-         }
+   let currentUTCDate = new Date();
+   let currentHour = currentUTCDate.getHours();
+   let currentMinute = currentUTCDate.getMinutes();
+   let timezoneOffset = currentUTCDate.getTimezoneOffset();
+   let timezone = '';
+   for (const [key, value] of Object.entries(timezoneOffsets)) {
+      if ((-1 * value) === timezoneOffset) {
+         timezone = key;
+         break;
       }
-      if (timezone == '') {
-         currentHour = currentHour + 19 % 24;
-         timezone = 'est';
-      }
-   
-      const offset = timezoneOffsets[timezone];
-      const currentDate = new Date(currentUTCDate.getTime() + offset*60*1000);
-   
-      /* 
-      *  Get indices for current event
-      *  events happen on 3, 7, 11, 15, 19, 23 hour marks
-      *  event cycles repeat every 8 weekdays 
-      */
-      const eventCycleIndex = daysBetween(originDate, currentDate) % 8;
-   
-      const eventHourIndex = Math.floor(currentHour / 4); 
-   
-      let hourETA = -1;
-      let wrapNextDay = false;
-   
-      for (hourMark of eventHourMarks[timezone]) {
-         if (hourMark - currentHour >= 0) {
-            hourETA = (hourMark - currentHour);
-            break;
-         }
-      }
-   
-      //Wrap to next day
-      if(hourETA < 0) {
-         hourETA = ((eventHourMarks[timezone][0] + 24) - currentHour);
-         wrapNextDay = true;
-      }
-   
-      const eventCycle = (eventCycles[timezone])[eventCycleIndex + (wrapNextDay ? 1 : 0)];
-      const nextEvent = eventNames[eventCycle[wrapNextDay ? 0 : eventHourIndex]];
-   
-      const minuteETA = 60 - currentMinute; 
-      const hourConditional = (hourETA - 1 + (minuteETA == 60));
-      let notification = "";
-   
-      if (hourETA == 0) {
-         notification += `${nextEvent} is happening right now!\n\nIt's been ${currentMinute} minutes since it started!`;
-      } else {
-         notification += "\nThere doesn't seem to be an event going on right now.\n\n";
-         notification += `${nextEvent} is happening in ${hourConditional ? `${hourConditional} hour(s) and ` : ``}${minuteETA % 60} minutes`;
-      }
-   
-      return notification;
-   } catch (error){
-      return error;
    }
+   if (timezone == '') {
+      currentHour = currentHour + 19 % 24;
+      timezone = 'est';
+   }
+
+   const offset = timezoneOffsets[timezone];
+   const currentDate = new Date(currentUTCDate.getTime() + offset*60*1000);
+
+   /* 
+   *  Get indices for current event
+   *  events happen on 3, 7, 11, 15, 19, 23 hour marks
+   *  event cycles repeat every 8 weekdays 
+   */
+   const eventCycleIndex = daysBetween(originDate, currentDate) % 8;
+
+   const eventHourIndex = Math.floor(currentHour / 4); 
+
+   let hourETA = -1;
+   let wrapNextDay = false;
+
+   for (hourMark of eventHourMarks[timezone]) {
+      if (hourMark - currentHour >= 0) {
+         hourETA = (hourMark - currentHour);
+         break;
+      }
+   }
+
+
+   //Wrap to next day
+   if(hourETA < 0) {
+      hourETA = ((eventHourMarks[timezone][0] + 24) - currentHour);
+      wrapNextDay = true;
+   }
+
+   const eventCycle = (eventCycles[timezone])[eventCycleIndex + (wrapNextDay ? 1 : 0)];
+   const nextEvent = eventNames[eventCycle[wrapNextDay ? 0 : eventHourIndex]];
+
+
+   const minuteETA = 60 - currentMinute; 
+   const hourConditional = (hourETA - 1 + (minuteETA == 60));
+   let notification = "";
+
+   if (hourETA == 0) {
+      notification += `${nextEvent} is happening right now!\n\nIt's been ${currentMinute} minutes since it started!`;
+   } else {
+      notification += "\nThere doesn't seem to be an event going on right now.\n\n";
+      notification += `${nextEvent} is happening in ${hourConditional ? `${hourConditional} hour(s) and ` : ``}${minuteETA % 60} minutes`;
+   }
+
+   return notification;
 }
+
 
 function getEventSchedule(timezone) {
    try{
