@@ -49,8 +49,8 @@ const timezoneOffsets = { 'cst': -360, 'est' : -300, 'pst' : -480};
  */
 function daysBetween(startDate, endDate) {
    var timeDiff = endDate.getTime() - startDate.getTime(); 
-   console.log(timeDiff/(1000*3600*24));
    var dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24)); 
+   console.log(dayDiff);
    return dayDiff;
 }
 
@@ -96,7 +96,6 @@ function getEvent(){
       }
    }
 
-
    //Wrap to next day
    if(hourETA < 0) {
       hourETA = ((eventHourMarks[timezone][0] + 24) - currentHour);
@@ -105,7 +104,6 @@ function getEvent(){
 
    const eventCycle = (eventCycles[timezone])[eventCycleIndex + (wrapNextDay ? 1 : 0)];
    const nextEvent = eventNames[eventCycle[wrapNextDay ? 0 : eventHourIndex]];
-
 
    const minuteETA = 60 - currentMinute; 
    const hourConditional = (hourETA - 1 + (minuteETA == 60));
@@ -122,13 +120,48 @@ function getEvent(){
 }
 
 function getEventSchedule(timezone) {
+
    let currentUTCDate = new Date();
+
+   let currentHour = currentUTCDate.getHours();
+   let timezoneOffset = currentUTCDate.getTimezoneOffset();
+   let hostTimezone = '';
+   for (const [key, value] of Object.entries(timezoneOffsets)) {
+      if ((-1 * value) === timezoneOffset) {
+         hostTimezone = key;
+         break;
+      }
+   }
+
+   let wrapNextDay = false;
+
+   if (hostTimezone == '') {
+      currentHour = currentHour + (24 + (timezoneOffsets[timezone] / 60)) % 24;
+   } else {
+      currentHour = currentHour + (24 + (-1 * timezoneOffsets[hostTimezone] / 60) + (timezoneOffsets[timezone] / 60)) % 24;
+   }
+
+
+   let hourETA = -1;
+
+   for (hourMark of eventHourMarks[timezone]) {
+      if (hourMark - currentHour >= 0) {
+         hourETA = (hourMark - currentHour);
+         break;
+      }
+   }
+
+   //Wrap to next day
+   if(hourETA < 0) {
+      wrapNextDay = true;
+   }
+
    const offset = timezoneOffsets[timezone];
    const currentDate = new Date(currentUTCDate.getTime() + offset*60*1000);
-   const eventCycleIndex = daysBetween(originDate, currentDate) % 8;
+   let eventCycleIndex = ((daysBetween(originDate, currentDate) + (wrapNextDay ? 1 : 0)) % 8);
    const eventCycle = (eventCycles[timezone])[eventCycleIndex];
    const eventCycleNames = eventCycle.map(eventIndex => eventNames[eventIndex]);
-   let schedule = `Here is the event schedule for today(${timezone}):\n\n`;
+   let schedule = wrapNextDay ? `Looks like all of the events have ended for today (${timezone}).  Here is tomorrows schedule:\n\n` : `Here is the event schedule for today(${timezone}):\n\n`;
    for (let i = 0; i < 6; i ++){
       schedule += `${(eventHourMarksStrings[timezone])[i]} : ${eventCycleNames[i]}\n`;
    }
