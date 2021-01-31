@@ -29,4 +29,19 @@ async function addBlacklist(namesToBlackList, channel){
       });
 }
 
-module.exports = { getBlacklist, addBlacklist };
+async function unBlackList(namesToClear, channel){
+    let blacklist = (await getBlacklistHelper()).data;
+    let blacklistArray = blacklist.blacklist;
+    console.log(blacklistArray, namesToClear);
+    blacklistArray = blacklistArray.filter((blacklistName)=>{ 
+        return !namesToClear.includes(blacklistName);
+    });
+    axios.put(jsonURL, {
+        blacklist : blacklistArray
+      })
+      .then(function (response) {
+        getBlacklist(channel);
+      });
+}
+
+module.exports = { getBlacklist, addBlacklist, unBlackList };
