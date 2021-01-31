@@ -13,7 +13,7 @@ async function getBlacklist(channel){
     let sendString = "\n**<BLACKLIST>**\n";
     let blacklist = (await getBlacklistHelper()).data.blacklist;
     for (entry of blacklist){
-        sendString += "**" + entry.ign + "**" + " was banned for: " + entry.reason + "\n";
+        sendString += "**" + entry.ign + "**" + " was blacklisted for: " + entry.reason + "\n";
     }
     channel.send(sendString);
 }
